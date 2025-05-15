@@ -1,0 +1,42 @@
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+.clock-container{
+    background-color: #222;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(225,255,255,.2);
+    padding: 20px;
+}
+
+#clock{
+    font-size: 3rem;
+}
+
+.controls{
+    margin-top: 10px;
+}
+
+button, select{
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button{
+    background-color: skyblue;
+    color: white;
+}
+
+button:hover{
+    background-color: steelblue;
+}
