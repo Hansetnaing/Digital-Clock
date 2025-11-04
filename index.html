@@ -11,16 +11,17 @@
         <h1 id="clock">00:00:00</h1>
         <div class="controls">
             <button id="toggleformat">Switch to 12 hours</button>
-            <select name="" id="timezone">
-                <option value="0">UTC</option>
-                <option value="6.5">Myanmar (UTC+6:30)</option>
-                <option value="7">Thailand (UTC+7:00)</option>
-                <option value="8">China (UTC+8:00)</option>
-                <option value="-5">New York (UTC-5:00)</option>
-                <option value="9">Japan (UTC+9:00)</option>
-                <option value="9">Korea (UTC+9:00)</option>
-                <option value="4">Dubai (UTC+4:00)</option>
+
+            <select id="region" aria-label="Region">
+                <option value="all">All</option>
+                <option value="south">South Asia</option>
+                <option value="se">Southeast Asia</option>
+                <option value="east">East Asia & Oceania</option>
+                <option value="west">West Asia</option>
+                <option value="utc">UTC</option>
             </select>
+
+            <select id="timezone" aria-label="Timezone"></select>
         </div>
     </div>
     <script src="script.js" type="text/javascript"></script>

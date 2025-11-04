@@ -40,3 +40,10 @@ button{
 button:hover{
     background-color: steelblue;
 }
+
+.controls select {
+    max-width: 220px;
+    margin-left: 8px;
+    padding: 6px;
+    box-sizing: border-box;
+}

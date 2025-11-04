@@ -73,6 +73,52 @@ document.getElementById('timezone').addEventListener('change',function(){
     updateClock();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const zones = {
+        utc: [{ value: 0, label: 'UTC', title: 'Coordinated Universal Time' }],
+        south: [
+            { value: 5.75, label: 'UTC+5:45 — Nepal', title: 'Nepal (UTC+5:45)' },
+            { value: 5.5,  label: 'UTC+5:30 — India', title: 'India / Sri Lanka (UTC+5:30)' },
+            { value: 5,    label: 'UTC+5:00 — Pakistan', title: 'Pakistan (UTC+5:00)' },
+            { value: 4.5,  label: 'UTC+4:30 — Afghanistan', title: 'Afghanistan (UTC+4:30)' }
+        ],
+        se: [
+            { value: 6,   label: 'UTC+6:00 — Bangladesh', title: 'Bangladesh / Bhutan (UTC+6:00)' },
+            { value: 6.5, label: 'UTC+6:30 — Myanmar', title: 'Myanmar (UTC+6:30)' },
+            { value: 7,   label: 'UTC+7:00 — SE Asia', title: 'Thailand / Vietnam / Indonesia (WIB)' },
+            { value: 8,   label: 'UTC+8:00 — China/SEA', title: 'China / Singapore / Malaysia / Philippines' }
+        ],
+        east: [
+            { value: 9,  label: 'UTC+9:00 — Japan/Korea', title: 'Japan / Korea (UTC+9:00)' },
+            { value: 10, label: 'UTC+10:00 — Australia (parts)', title: 'Parts of Australia (UTC+10:00)' }
+        ],
+        west: [
+            { value: 4,   label: 'UTC+4:00 — Dubai', title: 'UAE (UTC+4:00)' },
+            { value: 3.5, label: 'UTC+3:30 — Iran', title: 'Iran (UTC+3:30)' },
+            { value: 3,   label: 'UTC+3:00 — Saudi', title: 'Saudi Arabia (UTC+3:00)' }
+        ]
+    };
+
+    const regionEl = document.getElementById('region');
+    const tzEl = document.getElementById('timezone');
+
+    function populate(region = 'all') {
+        tzEl.innerHTML = '';
+        const list = region === 'all' ? Object.values(zones).flat() : (zones[region] || []);
+        list.forEach(z => {
+            const opt = document.createElement('option');
+            opt.value = z.value;
+            opt.textContent = z.label;
+            opt.title = z.title;
+            tzEl.appendChild(opt);
+        });
+        // keep existing code behavior: if you have a default read by clock, it will work
+    }
+
+    populate('south'); // default selection (change if you prefer)
+    regionEl.addEventListener('change', (e) => populate(e.target.value));
+});
+
 setInterval(updateClock, 1000);
 updateClock();
 
