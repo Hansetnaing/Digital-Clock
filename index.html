@@ -1,29 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Clock</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>World Clock</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="clock-container">
-        <h1 id="clock">00:00:00</h1>
-        <div class="controls">
-            <button id="toggleformat">Switch to 12 hours</button>
+  <main class="clock-card" aria-labelledby="page-title">
+    <p class="eyebrow">LIVE WORLD TIME</p>
+    <h1 id="page-title">World Clock</h1>
 
-            <select id="region" aria-label="Region">
-                <option value="all">All</option>
-                <option value="south">South Asia</option>
-                <option value="se">Southeast Asia</option>
-                <option value="east">East Asia & Oceania</option>
-                <option value="west">West Asia</option>
-                <option value="utc">UTC</option>
-            </select>
+    <section class="time-display" aria-live="polite" aria-atomic="true">
+      <time id="clock" datetime="">00:00:00</time>
+      <span id="period" class="period" aria-hidden="true"></span>
+    </section>
+    <p id="date" class="date">Loading date…</p>
+    <p id="location" class="location">Choose a location</p>
 
-            <select id="timezone" aria-label="Timezone"></select>
-        </div>
+    <div class="controls">
+      <label>
+        <span>Region</span>
+        <select id="region">
+          <option value="all">All locations</option>
+          <option value="south">South Asia</option>
+          <option value="se">Southeast Asia</option>
+          <option value="east">East Asia &amp; Oceania</option>
+          <option value="west">West Asia</option>
+          <option value="utc">UTC</option>
+        </select>
+      </label>
+      <label>
+        <span>Location</span>
+        <select id="timezone"></select>
+      </label>
     </div>
-    <script src="script.js" type="text/javascript"></script>
+
+    <div class="actions">
+      <button id="toggleformat" type="button" aria-pressed="false">Use 12-hour time</button>
+      <button id="use-local-time" class="secondary" type="button">Use my local time</button>
+    </div>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>

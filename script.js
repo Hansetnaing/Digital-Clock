@@ -1,125 +1,104 @@
-// let now = new Date();
-// console.log(now);
-// console.log(now.getHours(), now.getMinutes(), now.getSeconds());
-
-
-
-// let hours = 24;
-// console.log(hours);
-
-// let ampm = hours>=12 ? "PM" : "AM" ;
-// console.log(ampm);
-
-// let formattedhours = hours%12 || 12;
-// console.log(`${formattedhours} ${ampm}`);
-
-// hours(24)       hour%12         formatted
-// 0(midnight)         0               12
-// 12(noon)            0               12
-// 13(1PM)             1               1
-
-// -------------------------
-// Selected value
-// document.getElementById('timezone').addEventListener('change',function(){
-//     let selectedvalue = this.value;
-//     console.log(selectedvalue);
-// });
-
-// 1s = 1000Ms
-// 60s = 60000Ms
-
-let is24HourFormat = true; // default format 24
-let timeoffset = 0; // default utc time
-
-function updateClock(){
-  
-    let now = new Date();
-    let utc = now.getTime() + now.getTimezoneOffset() * 60000; // minutes to milliseconds
-
-    let localTime = new Date(utc + (timeoffset * 3600000)); // hours to milliseconds
-
-    let hours = localTime.getHours();
-    let minutes = localTime.getMinutes().toString().padStart(2,"0");
-    let seconds = localTime.getSeconds().toString().padStart(2,"0");
-
-    let ampm = ""; // store AM and PM
-
-
-    // ! logical operator (not) mean false
-    // || logical operator (or)
-    if(!is24HourFormat){
-        ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12 || 12; // convert to 12 format
-    }
-    else{
-        hours = hours.toString().padStart(2,"0");
-    }
-
-    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
-
+const zones = {
+  utc: [{ value: 'UTC', label: 'UTC', name: 'Coordinated Universal Time' }],
+  south: [
+    { value: 'Asia/Kathmandu', label: 'UTC+5:45 — Nepal', name: 'Kathmandu, Nepal' },
+    { value: 'Asia/Kolkata', label: 'UTC+5:30 — India', name: 'New Delhi, India' },
+    { value: 'Asia/Karachi', label: 'UTC+5:00 — Pakistan', name: 'Karachi, Pakistan' },
+    { value: 'Asia/Kabul', label: 'UTC+4:30 — Afghanistan', name: 'Kabul, Afghanistan' }
+  ],
+  se: [
+    { value: 'Asia/Dhaka', label: 'UTC+6:00 — Bangladesh', name: 'Dhaka, Bangladesh' },
+    { value: 'Asia/Yangon', label: 'UTC+6:30 — Myanmar', name: 'Yangon, Myanmar' },
+    { value: 'Asia/Bangkok', label: 'UTC+7:00 — Thailand', name: 'Bangkok, Thailand' },
+    { value: 'Asia/Singapore', label: 'UTC+8:00 — Singapore', name: 'Singapore' }
+  ],
+  east: [
+    { value: 'Asia/Tokyo', label: 'UTC+9:00 — Japan', name: 'Tokyo, Japan' },
+    { value: 'Australia/Sydney', label: 'UTC+10/+11 — Australia', name: 'Sydney, Australia' }
+  ],
+  west: [
+    { value: 'Asia/Dubai', label: 'UTC+4:00 — UAE', name: 'Dubai, United Arab Emirates' },
+    { value: 'Asia/Tehran', label: 'UTC+3:30 — Iran', name: 'Tehran, Iran' },
+    { value: 'Asia/Riyadh', label: 'UTC+3:00 — Saudi Arabia', name: 'Riyadh, Saudi Arabia' }
+  ]
 };
 
-//handle format toggleformat btn to 12 - 24
+const clock = document.querySelector('#clock');
+const date = document.querySelector('#date');
+const period = document.querySelector('#period');
+const locationText = document.querySelector('#location');
+const region = document.querySelector('#region');
+const timezone = document.querySelector('#timezone');
+const formatButton = document.querySelector('#toggleformat');
+const localButton = document.querySelector('#use-local-time');
 
-document.getElementById('toggleformat').addEventListener('click',function(){
-    is24HourFormat = !is24HourFormat;
-    this.textContent = is24HourFormat ? "Switch to 12-hour" : "Switch to 24-hour";
-    updateClock();
+let is24HourFormat = true;
+let selectedZone = 'Asia/Yangon';
+
+function getZoneDetails(zone) {
+  return Object.values(zones).flat().find((item) => item.value === zone);
+}
+
+function populate(regionName, preferredZone = selectedZone) {
+  const list = regionName === 'all' ? Object.values(zones).flat() : zones[regionName];
+  timezone.replaceChildren();
+  list.forEach((zone) => {
+    const option = new Option(zone.label, zone.value, false, zone.value === preferredZone);
+    timezone.add(option);
+  });
+  selectedZone = timezone.value;
+}
+
+function updateClock() {
+  const now = new Date();
+  const timeParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: selectedZone, hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hourCycle: is24HourFormat ? 'h23' : 'h12'
+  }).formatToParts(now);
+  const get = (type) => timeParts.find((part) => part.type === type)?.value || '';
+  const time = `${get('hour')}:${get('minute')}:${get('second')}`;
+  const dayPeriod = get('dayPeriod');
+
+  clock.textContent = time;
+  clock.dateTime = now.toISOString();
+  period.textContent = dayPeriod;
+  date.textContent = new Intl.DateTimeFormat('en-GB', {
+    timeZone: selectedZone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  }).format(now);
+
+  const details = getZoneDetails(selectedZone);
+  locationText.textContent = details ? details.name : selectedZone.replace('_', ' ');
+}
+
+region.addEventListener('change', () => {
+  populate(region.value);
+  updateClock();
 });
 
-//handle time zone change
-document.getElementById('timezone').addEventListener('change',function(){
-    timeoffset = this.value;
-    updateClock();
+timezone.addEventListener('change', () => {
+  selectedZone = timezone.value;
+  updateClock();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const zones = {
-        utc: [{ value: 0, label: 'UTC', title: 'Coordinated Universal Time' }],
-        south: [
-            { value: 5.75, label: 'UTC+5:45 — Nepal', title: 'Nepal (UTC+5:45)' },
-            { value: 5.5,  label: 'UTC+5:30 — India', title: 'India / Sri Lanka (UTC+5:30)' },
-            { value: 5,    label: 'UTC+5:00 — Pakistan', title: 'Pakistan (UTC+5:00)' },
-            { value: 4.5,  label: 'UTC+4:30 — Afghanistan', title: 'Afghanistan (UTC+4:30)' }
-        ],
-        se: [
-            { value: 6,   label: 'UTC+6:00 — Bangladesh', title: 'Bangladesh / Bhutan (UTC+6:00)' },
-            { value: 6.5, label: 'UTC+6:30 — Myanmar', title: 'Myanmar (UTC+6:30)' },
-            { value: 7,   label: 'UTC+7:00 — SE Asia', title: 'Thailand / Vietnam / Indonesia (WIB)' },
-            { value: 8,   label: 'UTC+8:00 — China/SEA', title: 'China / Singapore / Malaysia / Philippines' }
-        ],
-        east: [
-            { value: 9,  label: 'UTC+9:00 — Japan/Korea', title: 'Japan / Korea (UTC+9:00)' },
-            { value: 10, label: 'UTC+10:00 — Australia (parts)', title: 'Parts of Australia (UTC+10:00)' }
-        ],
-        west: [
-            { value: 4,   label: 'UTC+4:00 — Dubai', title: 'UAE (UTC+4:00)' },
-            { value: 3.5, label: 'UTC+3:30 — Iran', title: 'Iran (UTC+3:30)' },
-            { value: 3,   label: 'UTC+3:00 — Saudi', title: 'Saudi Arabia (UTC+3:00)' }
-        ]
-    };
-
-    const regionEl = document.getElementById('region');
-    const tzEl = document.getElementById('timezone');
-
-    function populate(region = 'all') {
-        tzEl.innerHTML = '';
-        const list = region === 'all' ? Object.values(zones).flat() : (zones[region] || []);
-        list.forEach(z => {
-            const opt = document.createElement('option');
-            opt.value = z.value;
-            opt.textContent = z.label;
-            opt.title = z.title;
-            tzEl.appendChild(opt);
-        });
-        // keep existing code behavior: if you have a default read by clock, it will work
-    }
-
-    populate('south'); // default selection (change if you prefer)
-    regionEl.addEventListener('change', (e) => populate(e.target.value));
+formatButton.addEventListener('click', () => {
+  is24HourFormat = !is24HourFormat;
+  formatButton.textContent = is24HourFormat ? 'Use 12-hour time' : 'Use 24-hour time';
+  formatButton.setAttribute('aria-pressed', String(!is24HourFormat));
+  updateClock();
 });
 
-setInterval(updateClock, 1000);
+localButton.addEventListener('click', () => {
+  const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  selectedZone = localZone;
+  region.value = 'all';
+  if (getZoneDetails(localZone)) {
+    populate('all', localZone);
+  } else {
+    timezone.replaceChildren(new Option(localZone.replace('_', ' '), localZone, true, true));
+  }
+  updateClock();
+});
+
+populate('se', selectedZone);
 updateClock();
-
-
+setInterval(updateClock, 1000);
